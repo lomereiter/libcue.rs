@@ -1,4 +1,4 @@
-use std::ffi::CString;
+use std::ffi::CStr;
 
 use cue_sys as libcue;
 use libc;
@@ -36,7 +36,7 @@ impl REM {
             if raw_string.is_null() {
                 return None;
             }
-            c_string = CString::from_raw(raw_string);
+            c_string = CStr::from_ptr(raw_string);
         }
         return Some(c_string.to_string_lossy().into_owned());
     }

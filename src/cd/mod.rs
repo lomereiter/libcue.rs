@@ -1,4 +1,4 @@
-use std::ffi::{CString, NulError};
+use std::ffi::{CStr, CString, NulError};
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
@@ -110,7 +110,7 @@ impl CD {
             if raw_string.is_null() {
                 return None;
             }
-            c_string = CString::from_raw(raw_string);
+            c_string = CStr::from_ptr(raw_string);
         }
         return Some(c_string.to_string_lossy().into_owned());
     }
