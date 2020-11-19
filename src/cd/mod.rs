@@ -1,8 +1,6 @@
 use std::ffi::{CStr, CString, NulError};
-use std::fs::File;
 use std::io;
-use std::io::prelude::*;
-use std::path::PathBuf;
+use std::path::Path;
 
 use cue_sys as libcue;
 pub use cue_sys::DiscMode;
@@ -68,7 +66,7 @@ impl CD {
     ///
     /// # Errors
     /// Returns a `NulError` if the provided string contains any null bytes.
-    pub fn parse(string: String) -> Result<CD, NulError> {
+    pub fn parse(string: &str) -> Result<CD, NulError> {
         let c_string = CString::new(string)?;
         let cd;
         unsafe {
@@ -80,10 +78,9 @@ impl CD {
 
     /// Reads the file contained at `path` and parses it like the [`parse`](#method.parse) function
     /// above.
-    pub fn parse_file(path: PathBuf) -> Result<CD, io::Error> {
-        let mut cue_sheet = vec![];
-        File::open(&path)?.read_to_end(&mut cue_sheet)?;
-        return Ok(CD::parse(String::from_utf8_lossy(&cue_sheet).into_owned()).unwrap());
+    pub fn parse_file<P: AsRef<Path>>(path: P) -> Result<CD, io::Error> {
+        let cue_sheet = std::fs::read_to_string(path)?;
+        return Ok(CD::parse(&cue_sheet).unwrap());
     }
 
     /// Returns a `DiscMode` value indicating the type of disc represented by this
